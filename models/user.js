@@ -1,70 +1,72 @@
-var db = require('../db');
-var jwt = require('jsonwebtoken');
-var bcrypt = require('bcryptjs');
+const db = require('../db');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
-getAllUser = () => new Promise((resolve, reject) => {
-    db.query('SELECT * from user', function (error, results, fields) {
-        if (error){
-            reject();
-        }else{
-            resolve(results[0]);
-        }
-    });
-});
+const userTools = this;
 
-saveUser = (userinfo) => new Promise((resolve,reject)=>{
-    var salt = bcrypt.genSaltSync(10);
-    var hash = bcrypt.hashSync(userinfo.password, salt);
-
-    userinfo.password = hash;
-    userinfo.token = jwt.sign({Owner : userinfo.Owner},'secretkey');
-
-    db.query('INSERT INTO user SET ?',userinfo,function(error,results,fields){
-        if(error){
-            reject();
-        }else{
-            resolve(userinfo);
-        }
-    })
-});
-
-getUserByToken = (token) => new Promise((resolve, reject) => {
-    var decoded ;
-    try{
-        decoded = jwt.verify(token,'secretkey');
-        resolve(decoded);
-    }catch(e){
-        reject();
+userTools.getAllUser = () => new Promise((resolve, reject) => {
+  db.query('SELECT * from user', (error, results, fields) => {
+    if (error) {
+      reject();
+    } else {
+      resolve({ results: results[0], fields });
     }
+  });
+});
+
+userTools.saveUser = userinfo => new Promise((resolve, reject) => {
+  const salt = bcrypt.genSaltSync(10);
+  const hash = bcrypt.hashSync(userinfo.password, salt);
+  const userInfoHash = {
+    password: hash,
+    token: jwt.sign({ Owner: userinfo.Owner }, 'secretkey'),
+  };
+
+  db.query('INSERT INTO user SET ?', userInfoHash, (error, results, fields) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve({ userinfo, fields });
+    }
+  });
+});
+
+userTools.getUserByToken = token => new Promise((resolve, reject) => {
+  try {
+    const decoded = jwt.verify(token, 'secretkey');
+    resolve(decoded);
+  } catch (e) {
+    reject(e);
+  }
 });
 
 /* Functions only used for testing data */
 
-saveUserForTest = (user)=> new Promise((resolve, reject) => {
-    db.query('INSERT INTO user SET ?',user,function (error, results, fields) {
-        if (error){
-            reject();
-        }else {
-            resolve();
-        }
-    });
+userTools.saveUserForTest = user => new Promise((resolve, reject) => {
+  db.query('INSERT INTO user SET ?', user, (error, results, fields) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve({ results, fields });
+    }
+  });
 });
 
-removeAllUser = () => new Promise((resolve, reject) => {
-    db.query('DELETE from user where ID > 0',function (error, results, fields) {
-        if (error){
-            reject();
-        }else {
-            resolve();
-        }
-    });
+userTools.removeAllUser = () => new Promise((resolve, reject) => {
+  db.query('DELETE from user where ID > 0', (error, results, fields) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve({ results, fields });
+    }
+  });
 });
 
 
 // The code below export the above functios so it can be used in other files.
 module.exports = {
-    saveUser,
-    getUserByToken,
-    saveUserForTest,
-    removeAllUser
+  saveUser: userTools.saveUser,
+  getUserByToken: userTools.getUserByToken,
+  saveUserForTest: userTools.saveUserForTest,
+  removeAllUser: userTools.removeAllUser,
 };

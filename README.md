@@ -50,33 +50,33 @@ Next, lets describe what each part of the first testing does.
 8) The next function is basically doing the opposite, we are sending an empty object and we are expeciting a `400`.
 ```sh
 describe('Testing POST /createUser',()=>{
-    it('should create a new user',(done)=>{
-        request(app)
-            .post('/createUser')
-            .send({
-                Owner : users[0].Owner,
-                firstname : users[0].firstname,
-                lastname : users[0].lastname,
-                email:users[0].email,
-                password : users[0].password,
-            })
-            .expect(200)
-            .expect((res) => {
-                expect(res.headers['x-auth']).toBeTruthy();
-                expect(res.body.email).toEqual(users[0].email);
-            })
-            .end(done);
-    });
+  it('should create a new user',(done)=>{
+    request(app)
+      .post('/createUser')
+      .send({
+        Owner : users[0].Owner,
+        firstname : users[0].firstname,
+        lastname : users[0].lastname,
+        email:users[0].email,
+        password : users[0].password,
+      })
+      .expect(200)
+      .expect((res) => {
+        expect(res.headers['x-auth']).toBeTruthy();
+        expect(res.body.email).toEqual(users[0].email);
+      })
+      .end(done);
+  });
 
-    it('should not create a new user with invalid body',(done)=>{
-        request(app)
-            .post('/createUser')
-            .send({})
-            .expect(400)
-            .end((err,res)=>{
-                return done(err);
-            });
-    });
+  it('should not create a new user with invalid body',(done)=>{
+    request(app)
+      .post('/createUser')
+      .send({})
+      .expect(400)
+      .end((err,res)=>{
+        return done(err);
+      });
+  });
 });
 
 ```
@@ -91,9 +91,9 @@ The db.js needs a new connection to a database in the cloud, I am using clearDB 
 Just writing sudo code in the bottom.
 ```sh
 if  env === Development
-    use local db
+  use local db
 else
-    use cloud db
+  use cloud db
 ```
 
 > `circle.yml`
@@ -108,18 +108,18 @@ The circle.yml file tells circle ci to run the script.
 machine:
 
   node:
-    version: 8.2.0
+  version: 8.2.0
 
   database:
-    override:
-    - mysql -u ubuntu circle_test < my-database-setup.sql
+  override:
+  - mysql -u ubuntu circle_test < my-database-setup.sql
 
   dependencies:
-    override:
-      - npm install --dev
+  override:
+    - npm install --dev
   test:
-    override:
-      -npm test
+  override:
+    -npm test
 
 ```
 
