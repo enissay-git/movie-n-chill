@@ -1,16 +1,15 @@
 const app = require('../index');
 const expect = require('expect');
 const request = require('supertest');
-// const should = require('should');
-const jest = require('jest');
+
 const { populateUsers, users } = require('./seed/seed');
 
-jest.beforeEach(populateUsers);
+beforeEach(populateUsers);
 
 
 /* Testing the users route for creating a new user */
-jest.describe('Testing POST /createUser', () => {
-  jest.it('should create a new user', (done) => {
+describe('Testing POST /createUser', () => {
+  it('should create a new user', (done) => {
     request(app)
       .post('/createUser')
       .send({
@@ -28,7 +27,7 @@ jest.describe('Testing POST /createUser', () => {
       .end(done);
   });
 
-  jest.it('should not create a new user with invalid body', (done) => {
+  it('should not create a new user with invalid body', (done) => {
     request(app)
       .post('/createUser')
       .send({})
@@ -37,8 +36,8 @@ jest.describe('Testing POST /createUser', () => {
   });
 });
 
-jest.describe('Testing the GET get/me for authentication ', () => {
-  jest.it('should return user if authenticated', (done) => {
+describe('Testing the GET get/me for authentication ', () => {
+  it('should return user if authenticated', (done) => {
     request(app)
       .get('/get/me')
       .set('x-auth', users[0].token)
@@ -49,7 +48,7 @@ jest.describe('Testing the GET get/me for authentication ', () => {
       .end(done);
   });
 
-  jest.it('should return 401 if not authenticated', (done) => {
+  it('should return 401 if not authenticated', (done) => {
     request(app)
       .get('/get/me')
       .set('x-auth', '12121212')
